@@ -1,0 +1,37 @@
+name: Java CI with Docker
+
+# Trigger this workflow on any push to the main branch
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Check out your code onto the runner machine
+    - uses: actions/checkout@v3
+
+    # 2. Set up Java 17 on the runner
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    # 3. Build with Maven (compile + package)
+    - name: Build with Maven
+      run: mvn clean package
+
+    # 4. Run Tests (This step runs your AppTest.java)
+    - name: Run Tests
+      run: mvn test
+
+    # 5. Build the Docker Image
+    - name: Build Docker Image
+      run: docker build -t quote-app .
+
+    # 6. Run the Docker Container (just to verify it starts)
+    - name: Run Docker Container
+      run: docker run quote-app
